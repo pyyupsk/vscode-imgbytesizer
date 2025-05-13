@@ -1,15 +1,44 @@
 {
   "name": "imgbytesizer",
+  "version": "0.0.1",
   "displayName": "ImaByteSizer",
   "description": "Resize and optimize images to match specific file sizes while maintaining quality",
-  "version": "0.0.1",
-  "engines": {
-    "vscode": "^1.96.0"
-  },
   "categories": [
     "Other"
   ],
+  "private": true,
+  "engines": {
+    "vscode": "^1.96.0"
+  },
   "main": "./out/extension.js",
+  "scripts": {
+    "compile": "tsc -p ./",
+    "format": "prettier --write . --ignore-path .gitignore",
+    "lint": "eslint src",
+    "precompile": "rimraf ./out",
+    "pretest": "bun run compile && bun run lint",
+    "test": "vscode-test",
+    "typecheck": "tsc --noEmit",
+    "vscode:prepublish": "bun run compile",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "@types/sinon": "^17.0.4",
+    "@types/vscode": "^1.96.0",
+    "@typescript-eslint/eslint-plugin": "^8.31.1",
+    "@typescript-eslint/parser": "^8.31.1",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.5.2",
+    "eslint": "^9.25.1",
+    "prettier": "^3.5.3",
+    "prettier-plugin-pkg": "^0.19.1",
+    "rimraf": "^6.0.1",
+    "sinon": "^20.0.0",
+    "typescript": "^5.8.3"
+  },
   "contributes": {
     "commands": [
       {
@@ -86,30 +115,5 @@
         }
       }
     }
-  },
-  "scripts": {
-    "vscode:prepublish": "bun run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "pretest": "bun run compile && bun run lint",
-    "lint": "eslint src",
-    "test": "vscode-test",
-    "precompile": "rimraf ./out"
-  },
-  "devDependencies": {
-    "@types/bun": "latest",
-    "@types/mocha": "^10.0.10",
-    "@types/node": "20.x",
-    "@types/sinon": "^17.0.4",
-    "@types/vscode": "^1.96.0",
-    "@typescript-eslint/eslint-plugin": "^8.31.1",
-    "@typescript-eslint/parser": "^8.31.1",
-    "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.5.2",
-    "eslint": "^9.25.1",
-    "rimraf": "^6.0.1",
-    "sinon": "^20.0.0",
-    "typescript": "^5.8.3"
-  },
-  "private": true
+  }
 }
