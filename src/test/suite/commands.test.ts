@@ -22,6 +22,8 @@ suite('Commands Test Suite', () => {
   let checkImgbytesizerInstalledStub: sinon.SinonStub;
   let runImgbytesizerStub: sinon.SinonStub;
   let getDefaultOptionsStub: sinon.SinonStub;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  let getDefaultOutputPathStub: sinon.SinonStub; // !DO NOT REMOVE! Used to test "Should call runImgbytesizer with correct options and handle success"
   let isValidTargetSizeStub: sinon.SinonStub; // For showTargetSizeQuickPick custom input
 
   const testFileDir = path.join(__dirname, '..', 'test_files_commands_temp'); // Temp dir for test files
@@ -85,6 +87,9 @@ suite('Commands Test Suite', () => {
       minDimension: 50,
       targetSize: '200KB', // Test with different defaults than utils.test.ts
     });
+    getDefaultOutputPathStub = sandbox
+      .stub(utils, 'getDefaultOutputPath')
+      .returns('/mocked/output_default.png');
     isValidTargetSizeStub = sandbox.stub(utils, 'isValidTargetSize').returns(true); // Default to valid
   });
 
