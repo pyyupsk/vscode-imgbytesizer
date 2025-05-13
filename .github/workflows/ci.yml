@@ -10,26 +10,38 @@ permissions:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    outputs:
+      cache-hit: ${{ steps.cache-pnpm.outputs.cache-hit }}
     steps:
       - uses: actions/checkout@v4
         name: Checkout repository
 
-      - uses: oven-sh/setup-bun@v2
-        name: Setup Bun
+      - uses: pnpm/action-setup@v4
+        name: Setup pnpm
 
       - uses: actions/setup-node@v4
         name: Setup Node.js
         with:
           node-version: 22
+          cache: pnpm
+
+      - name: 🔍 Cache pnpm store
+        id: cache-pnpm
+        uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: pnpm-store-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-store-${{ runner.os }}-
 
       - name: Install dependencies
-        run: bun install --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Compile & Typecheck & Lint
         run: |
-          bun run compile
-          bun run typecheck
-          bun run lint
+          pnpm run compile
+          pnpm run typecheck
+          pnpm run lint
 
       - name: Find VS Code stable release version
         id: code-stable
@@ -52,4 +64,4 @@ jobs:
           export DBUS_SESSION_BUS_ADDRESS=unix:path=$XDG_RUNTIME_DIR/bus
           dbus-daemon --session --address=$DBUS_SESSION_BUS_ADDRESS --nofork --nopidfile --syslog-only &
           mkdir ~/.vscode && echo '{ "disable-hardware-acceleration": true }' > ~/.vscode/argv.json
-          xvfb-run -a bun run test
+          xvfb-run -a pnpm run test

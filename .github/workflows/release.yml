@@ -1,0 +1,60 @@
+name: 🚀 Publish Release
+on:
+  push:
+    tags:
+      - 'v*'
+
+  workflow_dispatch:
+    inputs:
+      version_tag:
+        description: 'Tag to use for the release (e.g., v0.1.0)'
+        required: true
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    outputs:
+      cache-hit: ${{ steps.cache-pnpm.outputs.cache-hit }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        name: Setup pnpm
+
+      - uses: actions/setup-node@v4
+        name: Setup Node.js
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: 🔍 Cache pnpm store
+        id: cache-pnpm
+        uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: pnpm-store-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            pnpm-store-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Package Extension
+        run: pnpm --dlx vsce package
+
+      - name: Publish to VSCode Marketplace
+        run: pnpm --dlx vsce publish -p ${{ secrets.VSCE_PAT }}
+
+      - name: Upload VSIX to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          files: '*.vsix'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

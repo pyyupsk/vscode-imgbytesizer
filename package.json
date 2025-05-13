@@ -6,7 +6,12 @@
   "categories": [
     "Other"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pyyupsk/vscode-imgbytesizer.git"
+  },
   "private": true,
+  "packageManager": "pnpm@10.10.0+sha512.d615db246fe70f25dcfea6d8d73dee782ce23e2245e3c4f6f888249fb568149318637dca73c2c5c8ef2a4ca0d5657fb9567188bfab47f566d1ee6ce987815c39",
   "engines": {
     "vscode": "^1.96.0"
   },
@@ -17,14 +22,13 @@
     "lint": "eslint src",
     "lint:fix": "eslint src --fix",
     "precompile": "rimraf ./out",
-    "pretest": "bun run compile && bun run lint",
+    "pretest": "pnpm run compile && pnpm run lint",
     "test": "vscode-test",
     "typecheck": "tsc --noEmit",
-    "vscode:prepublish": "bun run compile",
+    "vscode:prepublish": "pnpm run compile",
     "watch": "tsc -watch -p ./"
   },
   "devDependencies": {
-    "@types/bun": "latest",
     "@types/mocha": "^10.0.10",
     "@types/node": "20.x",
     "@types/sinon": "^17.0.4",
@@ -33,6 +37,7 @@
     "@typescript-eslint/parser": "^8.31.1",
     "@vscode/test-cli": "^0.0.10",
     "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "^3.3.2",
     "eslint": "^9.25.1",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-perfectionist": "^4.13.0",
