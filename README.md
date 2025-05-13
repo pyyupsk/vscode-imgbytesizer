@@ -56,7 +56,7 @@ This extension is a wrapper around the `imgbytesizer` command-line, which:
 
 The `imgbytesizer` is a command-line tool that resizes images to match a target file size while maintaining quality. It's particularly useful when you need to meet specific size requirements (like upload limits) without manually trying different compression settings.
 
-For more information about the library, see the [imgbytesizer documentation](https://github.com/pyyupsk/imgbytesizer).
+For more information about the command-line, see the [imgbytesizer documentation](https://github.com/pyyupsk/imgbytesizer).
 
 ## License
 
