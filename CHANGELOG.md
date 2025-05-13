@@ -5,7 +5,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [0.2.0] - 2025-05-13
 
-- Add extension icon
+- Add extension icon to vscode marketplace
 - Update publisher name in package.json
 - Fix cache directory name in CI workflow
 - Fix permissions for release workflow
