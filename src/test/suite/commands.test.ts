@@ -1,8 +1,8 @@
 import assert from 'assert';
-import vscode from 'vscode';
-import sinon, { SinonStubbedInstance } from 'sinon';
-import path from 'path';
 import fs from 'fs';
+import path from 'path';
+import sinon from 'sinon';
+import vscode from 'vscode';
 
 import * as commands from '../../commands';
 import * as utils from '../../utils';
@@ -17,13 +17,11 @@ suite('Commands Test Suite', () => {
   let showInputBoxStub: sinon.SinonStub;
   let withProgressStub: sinon.SinonStub;
   let executeCommandStub: sinon.SinonStub;
-  let activeTextEditorStub: sinon.SinonStubbedInstance<Partial<vscode.TextEditor>>;
 
   // Stubs for utils functions
   let checkImgbytesizerInstalledStub: sinon.SinonStub;
   let runImgbytesizerStub: sinon.SinonStub;
   let getDefaultOptionsStub: sinon.SinonStub;
-  let getDefaultOutputPathStub: sinon.SinonStub;
   let isValidTargetSizeStub: sinon.SinonStub; // For showTargetSizeQuickPick custom input
 
   const testFileDir = path.join(__dirname, '..', 'test_files_commands_temp'); // Temp dir for test files
@@ -51,7 +49,8 @@ suite('Commands Test Suite', () => {
         fs.rmdirSync(testFileDir); // if empty
       } catch (e) {
         console.warn(
-          `Could not remove temp dir ${testFileDir}, it might not be empty or due to permissions. Manual cleanup might be needed.`
+          `Could not remove temp dir ${testFileDir}, it might not be empty or due to permissions. Manual cleanup might be needed.`,
+          e
         );
       }
     }
@@ -77,24 +76,15 @@ suite('Commands Test Suite', () => {
       });
     executeCommandStub = sandbox.stub(vscode.commands, 'executeCommand');
 
-    // Stub activeTextEditor
-    // By default, no active editor or one that doesn't match
-    activeTextEditorStub = sandbox
-      .stub(vscode.window, 'activeTextEditor')
-      .value(undefined) as SinonStubbedInstance<Partial<vscode.TextEditor>>;
-
     // Stub utils functions
     checkImgbytesizerInstalledStub = sandbox.stub(utils, 'checkImgbytesizerInstalled');
     runImgbytesizerStub = sandbox.stub(utils, 'runImgbytesizer');
     getDefaultOptionsStub = sandbox.stub(utils, 'getDefaultOptions').returns({
-      targetSize: '200KB', // Test with different defaults than utils.test.ts
+      exactSize: false,
       format: 'png',
       minDimension: 50,
-      exactSize: false,
+      targetSize: '200KB', // Test with different defaults than utils.test.ts
     });
-    getDefaultOutputPathStub = sandbox
-      .stub(utils, 'getDefaultOutputPath')
-      .returns('/mocked/output_default.png');
     isValidTargetSizeStub = sandbox.stub(utils, 'isValidTargetSize').returns(true); // Default to valid
   });
 
@@ -133,9 +123,9 @@ suite('Commands Test Suite', () => {
 
       showQuickPickStub.resolves('100KB'); // User selects target size
       runImgbytesizerStub.resolves({
-        success: true,
         message: 'Resized',
         outputPath: editorUri.fsPath + '_resized',
+        success: true,
       });
 
       await commands.resizeImage(undefined);
@@ -171,9 +161,9 @@ suite('Commands Test Suite', () => {
       showQuickPickStub.resolves('1MB'); // User selects target size
       const expectedOutputPath = '/mocked/output_default.png'; // from getDefaultOutputPathStub
       runImgbytesizerStub.resolves({
-        success: true,
         message: 'Resized!',
         outputPath: expectedOutputPath,
+        success: true,
       });
       showInformationMessageStub.resolves('Open File'); // User chooses to open
 
@@ -184,12 +174,12 @@ suite('Commands Test Suite', () => {
 
       assert.ok(
         runImgbytesizerStub.calledOnceWith(testImagePath, {
-          targetSize: '1MB',
-          outputPath: expectedOutputPath,
+          exactSize: defaultOptsFromUtil.exactSize,
           format: defaultOptsFromUtil.format === 'same' ? undefined : defaultOptsFromUtil.format,
           minDimension:
             defaultOptsFromUtil.minDimension === 0 ? undefined : defaultOptsFromUtil.minDimension,
-          exactSize: defaultOptsFromUtil.exactSize,
+          outputPath: expectedOutputPath,
+          targetSize: '1MB',
         })
       );
       assert.ok(withProgressStub.calledOnce);
@@ -203,8 +193,8 @@ suite('Commands Test Suite', () => {
       checkImgbytesizerInstalledStub.resolves(true);
       showQuickPickStub.resolves('500KB');
       runImgbytesizerStub.resolves({
-        success: false,
         message: 'Conversion failed badly.',
+        success: false,
       });
 
       await commands.resizeImage(testImageUri);
@@ -227,12 +217,12 @@ suite('Commands Test Suite', () => {
   suite('resizeImageWithOptions Command', () => {
     // Helper to simulate a sequence of user inputs
     const simulateUserInputs = (inputs: {
-      targetSize?: string | undefined;
       customTargetSize?: string | undefined;
-      format?: { label: string; value: string } | string | undefined; // showQuickPick returns object for format
-      outputPath?: string | undefined;
-      minDimension?: string | undefined;
       exactSize?: string | undefined; // "Yes" or "No"
+      format?: string | undefined | { label: string; value: string }; // showQuickPick returns object for format
+      minDimension?: string | undefined;
+      outputPath?: string | undefined;
+      targetSize?: string | undefined;
     }) => {
       let qpCall = 0;
       let ibCall = 0;
@@ -276,16 +266,16 @@ suite('Commands Test Suite', () => {
     test('Should proceed through all steps and call runImgbytesizer with chosen options', async () => {
       checkImgbytesizerInstalledStub.resolves(true);
       simulateUserInputs({
-        targetSize: '250KB',
-        format: { label: 'JPEG', value: 'jpg' }, // showFormatQuickPick returns {label, value} then command takes .value
-        outputPath: '/my/output.jpg',
-        minDimension: '150',
         exactSize: 'Yes',
+        format: { label: 'JPEG', value: 'jpg' }, // showFormatQuickPick returns {label, value} then command takes .value
+        minDimension: '150',
+        outputPath: '/my/output.jpg',
+        targetSize: '250KB',
       });
       runImgbytesizerStub.resolves({
-        success: true,
         message: 'Success!',
         outputPath: '/my/output.jpg',
+        success: true,
       });
 
       await commands.resizeImageWithOptions(testImageUri);
@@ -304,18 +294,18 @@ suite('Commands Test Suite', () => {
       checkImgbytesizerInstalledStub.resolves(true);
       const customSize = '777KB';
       simulateUserInputs({
-        targetSize: 'Custom size...',
         customTargetSize: customSize,
-        format: { label: 'PNG', value: 'png' },
-        outputPath: '', // Use default
-        minDimension: '0',
         exactSize: 'No',
+        format: { label: 'PNG', value: 'png' },
+        minDimension: '0',
+        outputPath: '', // Use default
+        targetSize: 'Custom size...',
       });
       isValidTargetSizeStub.withArgs(customSize).returns(true);
       runImgbytesizerStub.resolves({
-        success: true,
         message: 'Done',
         outputPath: '/mocked/output_default.png',
+        success: true,
       });
 
       await commands.resizeImageWithOptions(testImageUri);

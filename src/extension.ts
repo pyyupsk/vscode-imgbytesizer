@@ -1,4 +1,5 @@
 import vscode from 'vscode';
+
 import * as commands from './commands';
 
 export function activate(context: vscode.ExtensionContext) {

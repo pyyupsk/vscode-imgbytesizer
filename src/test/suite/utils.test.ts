@@ -1,11 +1,12 @@
 import assert from 'assert';
-import vscode from 'vscode';
-import sinon from 'sinon';
 import fs from 'fs';
 import path from 'path';
+import sinon from 'sinon';
+import vscode from 'vscode';
+
+import type { ImgByteOptions } from '../../utils';
 
 import * as utils from '../../utils';
-import { ImgByteOptions } from '../../utils';
 
 suite('Utils Test Suite', () => {
   let sandbox: sinon.SinonSandbox;
@@ -18,16 +19,16 @@ suite('Utils Test Suite', () => {
     mockWorkspaceConfig = {
       get: sinon.stub().callsFake((key: string) => {
         switch (key) {
-          case 'imgbytesizerPath':
-            return 'imgbytesizer'; // Default mock value
-          case 'defaultTargetSize':
-            return '500KB';
+          case 'defaultExact':
+            return true;
           case 'defaultFormat':
             return 'same';
           case 'defaultMinDimension':
             return 0;
-          case 'defaultExact':
-            return true;
+          case 'defaultTargetSize':
+            return '500KB';
+          case 'imgbytesizerPath':
+            return 'imgbytesizer'; // Default mock value
           default:
             return undefined;
         }
@@ -90,10 +91,10 @@ suite('Utils Test Suite', () => {
     test('Should return default options from configuration', () => {
       const defaultOptions = utils.getDefaultOptions();
       assert.deepStrictEqual(defaultOptions, {
-        targetSize: '500KB',
+        exactSize: true,
         format: 'same',
         minDimension: 0,
-        exactSize: true,
+        targetSize: '500KB',
       });
     });
 
@@ -116,10 +117,10 @@ suite('Utils Test Suite', () => {
       });
       const defaultOptions = utils.getDefaultOptions();
       assert.deepStrictEqual(defaultOptions, {
-        targetSize: '500KB',
+        exactSize: true,
         format: 'same',
         minDimension: 0,
-        exactSize: true,
+        targetSize: '500KB',
       });
     });
   });
@@ -185,12 +186,6 @@ suite('Utils Test Suite', () => {
 
   suite('buildCommand()', () => {
     const imagePath = '/path/to/my image.png'; // Path with space
-    let getImgbytesizerPathStub: sinon.SinonStub;
-
-    setup(() => {
-      // Stub getImgbytesizerPath to ensure consistent command prefix
-      getImgbytesizerPathStub = sandbox.stub(utils, 'getImgbytesizerPath').returns('imgbytesizer');
-    });
 
     test('Should build basic command with target size', () => {
       const options: ImgByteOptions = { targetSize: '250KB' };
@@ -202,8 +197,8 @@ suite('Utils Test Suite', () => {
 
     test('Should include output path if provided', () => {
       const options: ImgByteOptions = {
-        targetSize: '1MB',
         outputPath: '/out path/img.png',
+        targetSize: '1MB',
       };
       assert.strictEqual(
         utils.buildCommand(imagePath, options),
@@ -212,7 +207,7 @@ suite('Utils Test Suite', () => {
     });
 
     test("Should include format if provided and not 'same'", () => {
-      const options: ImgByteOptions = { targetSize: '50KB', format: 'webp' };
+      const options: ImgByteOptions = { format: 'webp', targetSize: '50KB' };
       assert.strictEqual(
         utils.buildCommand(imagePath, options),
         `imgbytesizer "${imagePath}" 50KB -f webp`
@@ -220,7 +215,7 @@ suite('Utils Test Suite', () => {
     });
 
     test("Should not include format if 'same'", () => {
-      const options: ImgByteOptions = { targetSize: '50KB', format: 'same' };
+      const options: ImgByteOptions = { format: 'same', targetSize: '50KB' };
       assert.strictEqual(
         utils.buildCommand(imagePath, options),
         `imgbytesizer "${imagePath}" 50KB`
@@ -229,8 +224,8 @@ suite('Utils Test Suite', () => {
 
     test('Should include min-dimension if provided and > 0', () => {
       const options: ImgByteOptions = {
-        targetSize: '100KB',
         minDimension: 200,
+        targetSize: '100KB',
       };
       assert.strictEqual(
         utils.buildCommand(imagePath, options),
@@ -239,7 +234,7 @@ suite('Utils Test Suite', () => {
     });
 
     test('Should not include min-dimension if 0 or undefined', () => {
-      const options1: ImgByteOptions = { targetSize: '100KB', minDimension: 0 };
+      const options1: ImgByteOptions = { minDimension: 0, targetSize: '100KB' };
       assert.strictEqual(
         utils.buildCommand(imagePath, options1),
         `imgbytesizer "${imagePath}" 100KB`
@@ -252,7 +247,7 @@ suite('Utils Test Suite', () => {
     });
 
     test('Should include --no-exact if exactSize is false', () => {
-      const options: ImgByteOptions = { targetSize: '70KB', exactSize: false };
+      const options: ImgByteOptions = { exactSize: false, targetSize: '70KB' };
       assert.strictEqual(
         utils.buildCommand(imagePath, options),
         `imgbytesizer "${imagePath}" 70KB --no-exact`
@@ -260,7 +255,7 @@ suite('Utils Test Suite', () => {
     });
 
     test('Should not include --no-exact if exactSize is true or undefined', () => {
-      const options1: ImgByteOptions = { targetSize: '70KB', exactSize: true };
+      const options1: ImgByteOptions = { exactSize: true, targetSize: '70KB' };
       assert.strictEqual(
         utils.buildCommand(imagePath, options1),
         `imgbytesizer "${imagePath}" 70KB`
@@ -274,11 +269,11 @@ suite('Utils Test Suite', () => {
 
     test('Should build full command with all options', () => {
       const options: ImgByteOptions = {
-        targetSize: '2MB',
-        outputPath: '/final output/image name.webp',
+        exactSize: false,
         format: 'webp',
         minDimension: 300,
-        exactSize: false,
+        outputPath: '/final output/image name.webp',
+        targetSize: '2MB',
       };
       const expected = `imgbytesizer "${imagePath}" 2MB -o "/final output/image name.webp" -f webp --min-dimension 300 --no-exact`;
       assert.strictEqual(utils.buildCommand(imagePath, options), expected);
@@ -289,7 +284,6 @@ suite('Utils Test Suite', () => {
     let existsSyncStub: sinon.SinonStub;
     let mkdirSyncStub: sinon.SinonStub;
     let execSyncStub: sinon.SinonStub; // Stub for child_process.execSync
-    let buildCommandStub: sinon.SinonStub;
     let getDefaultOutputPathStub: sinon.SinonStub;
 
     const testImagePath = '/test/input image.jpg';
@@ -300,7 +294,6 @@ suite('Utils Test Suite', () => {
       existsSyncStub = sandbox.stub(fs, 'existsSync');
       mkdirSyncStub = sandbox.stub(fs, 'mkdirSync');
       execSyncStub = sandbox.stub(require('child_process'), 'execSync');
-      buildCommandStub = sandbox.stub(utils, 'buildCommand').returns('mocked command to execute');
       // getDefaultOutputPath is stubbed to control its output during these tests
       getDefaultOutputPathStub = sandbox
         .stub(utils, 'getDefaultOutputPath')
@@ -311,8 +304,8 @@ suite('Utils Test Suite', () => {
       existsSyncStub.withArgs(testImagePath).returns(false);
       const result = await utils.runImgbytesizer(testImagePath, defaultOptions);
       assert.deepStrictEqual(result, {
-        success: false,
         message: `Image file not found: ${testImagePath}`,
+        success: false,
       });
     });
 
@@ -337,9 +330,9 @@ suite('Utils Test Suite', () => {
       const result = await utils.runImgbytesizer(testImagePath, defaultOptions);
 
       assert.deepStrictEqual(result, {
-        success: true,
         message: `Image resized successfully to ${defaultOptions.targetSize}`,
         outputPath: defaultMockedOutputPath,
+        success: true,
       });
     });
 
@@ -351,8 +344,8 @@ suite('Utils Test Suite', () => {
 
       const result = await utils.runImgbytesizer(testImagePath, defaultOptions);
       assert.deepStrictEqual(result, {
-        success: false,
         message: `Error: ${errorMessage}`,
+        success: false,
       });
     });
 
@@ -378,9 +371,9 @@ suite('Utils Test Suite', () => {
       );
 
       assert.deepStrictEqual(result, {
-        success: true,
         message: `Image resized successfully to ${optionsWithOutput.targetSize}`,
         outputPath: specificOutputPath,
+        success: true,
       });
     });
   });
