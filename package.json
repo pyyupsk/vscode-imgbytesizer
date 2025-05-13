@@ -93,7 +93,8 @@
     "watch": "tsc -watch -p ./",
     "pretest": "bun run compile && bun run lint",
     "lint": "eslint src",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "precompile": "rimraf ./out"
   },
   "devDependencies": {
     "@types/bun": "latest",
@@ -106,6 +107,7 @@
     "@vscode/test-cli": "^0.0.10",
     "@vscode/test-electron": "^2.5.2",
     "eslint": "^9.25.1",
+    "rimraf": "^6.0.1",
     "sinon": "^20.0.0",
     "typescript": "^5.8.3"
   },

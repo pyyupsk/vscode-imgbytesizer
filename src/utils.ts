@@ -25,14 +25,12 @@ export async function checkImgbytesizerInstalled(): Promise<boolean> {
 }
 
 /**
- * Gets the ImgByteSizer path from configuration or uses 'python' as default
+ * Gets the ImgByteSizer path from configuration or uses 'imgbytesizer' as default
  */
 export function getImgbytesizerPath(): string {
   const config = vscode.workspace.getConfiguration("imgbytesizer");
   const imgbytesizerPath = config.get<string>("imgbytesizerPath");
-  return imgbytesizerPath && imgbytesizerPath.trim() !== ""
-    ? imgbytesizerPath
-    : "imgbytesizer";
+  return imgbytesizerPath ? imgbytesizerPath.trim() : "imgbytesizer";
 }
 
 /**
