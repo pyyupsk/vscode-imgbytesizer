@@ -1,0 +1,113 @@
+{
+  "name": "imgbytesizer",
+  "displayName": "ImaByteSizer",
+  "description": "Resize and optimize images to match specific file sizes while maintaining quality",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.96.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "imgbytesizer.resizeImage",
+        "title": "Resize Image to Target Size",
+        "category": "ImgByteSizer"
+      },
+      {
+        "command": "imgbytesizer.resizeImageWithOptions",
+        "title": "Resize Image with Advanced Options",
+        "category": "ImgByteSizer"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "when": "resourceExtname =~ /\\.(jpg|jpeg|png|webp)$/i",
+          "command": "imgbytesizer.resizeImage",
+          "group": "7_modification"
+        },
+        {
+          "when": "resourceExtname =~ /\\.(jpg|jpeg|png|webp)$/i",
+          "command": "imgbytesizer.resizeImageWithOptions",
+          "group": "7_modification"
+        }
+      ],
+      "editor/context": [
+        {
+          "when": "resourceExtname =~ /\\.(jpg|jpeg|png|webp)$/i",
+          "command": "imgbytesizer.resizeImage",
+          "group": "7_modification"
+        },
+        {
+          "when": "resourceExtname =~ /\\.(jpg|jpeg|png|webp)$/i",
+          "command": "imgbytesizer.resizeImageWithOptions",
+          "group": "7_modification"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Image ByteSizer",
+      "properties": {
+        "imgbytesizer.defaultTargetSize": {
+          "type": "string",
+          "default": "500KB",
+          "description": "Default target file size (e.g., '1MB', '500KB')."
+        },
+        "imgbytesizer.defaultFormat": {
+          "type": "string",
+          "enum": [
+            "jpg",
+            "jpeg",
+            "png",
+            "webp",
+            "same"
+          ],
+          "default": "same",
+          "description": "Default output format (use 'same' to keep original format)."
+        },
+        "imgbytesizer.defaultMinDimension": {
+          "type": "number",
+          "default": 0,
+          "description": "Default minimum width/height in pixels (0 to disable)."
+        },
+        "imgbytesizer.defaultExact": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to pad file to get exact target size by default."
+        },
+        "imgbytesizer.imgbytesizerPath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to the imgbytesizer executable. Leave empty to use default path."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "bun run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "bun run compile && bun run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "@types/sinon": "^17.0.4",
+    "@types/vscode": "^1.96.0",
+    "@typescript-eslint/eslint-plugin": "^8.31.1",
+    "@typescript-eslint/parser": "^8.31.1",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.5.2",
+    "eslint": "^9.25.1",
+    "sinon": "^20.0.0",
+    "typescript": "^5.8.3"
+  },
+  "private": true
+}
