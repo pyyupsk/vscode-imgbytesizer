@@ -25,7 +25,7 @@ jobs:
           node-version: 22
           cache: pnpm
 
-      - name: 🔍 Cache pnpm store
+      - name: Cache pnpm store
         id: cache-pnpm
         uses: actions/cache@v4
         with:
