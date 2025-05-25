@@ -58,9 +58,9 @@ export function getDefaultOptions(): Partial<ImgByteOptions> {
   const config = vscode.workspace.getConfiguration('imgbytesizer');
   return {
     exactSize: config.get<boolean>('defaultExact') ?? true,
-    format: config.get<string>('defaultFormat') || 'same',
-    minDimension: config.get<number>('defaultMinDimension') || 0,
-    targetSize: config.get<string>('defaultTargetSize') || '500KB',
+    format: config.get<string>('defaultFormat') ?? 'same',
+    minDimension: config.get<number>('defaultMinDimension') ?? 0,
+    targetSize: config.get<string>('defaultTargetSize') ?? '500KB',
   };
 }
 
@@ -103,7 +103,7 @@ export async function runImgbytesizer(
     }
 
     // Ensure output directory exists
-    const outputPath = options.outputPath || getDefaultOutputPath(imagePath, options.format);
+    const outputPath = options.outputPath ?? getDefaultOutputPath(imagePath, options.format);
     const outputDir = path.dirname(outputPath);
 
     if (!fs.existsSync(outputDir)) {
