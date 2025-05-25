@@ -202,7 +202,7 @@ async function getUserOptions(
     exactSize: exactSizeResult === 'Yes',
     format: format === 'same' ? undefined : format,
     minDimension: minDimension === 0 ? undefined : minDimension,
-    outputPath: outputPath || defaultOutputPath,
+    outputPath: outputPath ?? defaultOutputPath,
     targetSize,
   };
 }
