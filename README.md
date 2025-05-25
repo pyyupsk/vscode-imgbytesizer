@@ -1,5 +1,7 @@
 # ImgByteSizer - VSCode Extension
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=pyyupsk_vscode-imgbytesizer&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=pyyupsk_vscode-imgbytesizer)
+
 A VSCode extension that integrates the `imgbytesizer` command-line to resize and optimize images to match specific file sizes while maintaining the best possible quality.
 
 ## Requirements
