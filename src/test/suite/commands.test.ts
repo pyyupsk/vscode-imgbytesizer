@@ -22,8 +22,7 @@ suite('Commands Test Suite', () => {
   let checkImgbytesizerInstalledStub: sinon.SinonStub;
   let runImgbytesizerStub: sinon.SinonStub;
   let getDefaultOptionsStub: sinon.SinonStub;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  let getDefaultOutputPathStub: sinon.SinonStub; // !DO NOT REMOVE! Used to test "Should call runImgbytesizer with correct options and handle success"
+  let getDefaultOutputPathStub: sinon.SinonStub;
   let isValidTargetSizeStub: sinon.SinonStub; // For showTargetSizeQuickPick custom input
 
   const testFileDir = path.join(__dirname, '..', 'test_files_commands_temp'); // Temp dir for test files
@@ -163,8 +162,10 @@ suite('Commands Test Suite', () => {
 
     test('Should call runImgbytesizer with correct options and handle success', async () => {
       checkImgbytesizerInstalledStub.resolves(true);
+      getDefaultOutputPathStub.callsFake(() => '/mocked/output_default.png');
+
       showQuickPickStub.resolves('1MB'); // User selects target size
-      const expectedOutputPath = '/mocked/output_default.png'; // from getDefaultOutputPathStub
+      const expectedOutputPath = '/mocked/output_default.png';
       runImgbytesizerStub.resolves({
         message: 'Resized!',
         outputPath: expectedOutputPath,
@@ -303,7 +304,7 @@ suite('Commands Test Suite', () => {
         exactSize: 'No',
         format: { label: 'PNG', value: 'png' },
         minDimension: '0',
-        outputPath: '', // Use default
+        outputPath: '/mocked/output_default.png', // Use default path explicitly
         targetSize: 'Custom size...',
       });
       isValidTargetSizeStub.withArgs(customSize).returns(true);

@@ -54,7 +54,10 @@ export async function resizeImage(uri?: vscode.Uri): Promise<void> {
       exactSize: defaultOptions.exactSize,
       format: defaultOptions.format === 'same' ? undefined : defaultOptions.format,
       minDimension: defaultOptions.minDimension === 0 ? undefined : defaultOptions.minDimension,
-      outputPath: utils.getDefaultOutputPath(imagePath, defaultOptions.format),
+      outputPath: utils.getDefaultOutputPath(
+        imagePath,
+        defaultOptions.format === 'same' ? undefined : defaultOptions.format
+      ),
       targetSize,
     };
 
