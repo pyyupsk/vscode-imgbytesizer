@@ -1,4 +1,4 @@
-import { execSync } from 'child_process';
+import { spawnSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import vscode from 'vscode';
@@ -43,8 +43,11 @@ export function buildCommand(imagePath: string, options: ImgByteOptions): string
 export async function checkImgbytesizerInstalled(): Promise<boolean> {
   try {
     const imgbytesizerPath = getImgbytesizerPath();
-    execSync(`${imgbytesizerPath} -v`, { stdio: 'ignore' });
-    return true;
+    const result = spawnSync(imgbytesizerPath, ['-v'], {
+      shell: false,
+      stdio: 'ignore',
+    });
+    return result.status === 0;
   } catch (error) {
     console.error('Error checking imgbytesizer installation:', error);
     return false;
@@ -80,7 +83,14 @@ export function getDefaultOutputPath(imagePath: string, format?: string): string
 export function getImgbytesizerPath(): string {
   const config = vscode.workspace.getConfiguration('imgbytesizer');
   const imgbytesizerPath = config.get<string>('imgbytesizerPath');
-  return imgbytesizerPath ? imgbytesizerPath.trim() : 'imgbytesizer';
+  const path = imgbytesizerPath ? imgbytesizerPath.trim() : 'imgbytesizer';
+
+  try {
+    return validateImgbytesizerPath(path);
+  } catch (error) {
+    console.error('Invalid imgbytesizer path:', error);
+    return 'imgbytesizer'; // Fallback to default
+  }
 }
 
 /**
@@ -110,14 +120,44 @@ export async function runImgbytesizer(
       fs.mkdirSync(outputDir, { recursive: true });
     }
 
-    const command = buildCommand(imagePath, { ...options, outputPath });
+    const imgbytesizerPath = getImgbytesizerPath();
+    const args: string[] = [imagePath, options.targetSize];
 
-    // Execute the command and capture output
-    const output = execSync(command, { encoding: 'utf8' });
+    if (options.outputPath) {
+      args.push('-o', options.outputPath);
+    }
+
+    if (options.format && options.format !== 'same') {
+      args.push('-f', options.format);
+    }
+
+    if (options.minDimension && options.minDimension > 0) {
+      args.push('--min-dimension', options.minDimension.toString());
+    }
+
+    if (options.exactSize === false) {
+      args.push('--no-exact');
+    }
+
+    const result = spawnSync(imgbytesizerPath, args, {
+      encoding: 'utf8',
+      shell: false,
+    });
+
+    if (result.error) {
+      throw result.error;
+    }
+
+    if (result.status !== 0) {
+      return {
+        message: `Command failed with status ${result.status}. Error: ${result.stderr}`,
+        success: false,
+      };
+    }
 
     if (!fs.existsSync(outputPath)) {
       return {
-        message: `Failed to create output file: ${outputPath}. Command output: ${output}`,
+        message: `Failed to create output file: ${outputPath}. Command output: ${result.stdout}`,
         success: false,
       };
     }
@@ -131,4 +171,24 @@ export async function runImgbytesizer(
     const errorMsg = error instanceof Error ? error.message : String(error);
     return { message: `Error: ${errorMsg}`, success: false };
   }
+}
+
+/**
+ * Validates and sanitizes the imgbytesizer path
+ */
+function validateImgbytesizerPath(path: string): string {
+  // Remove any shell metacharacters
+  const sanitized = path.replace(/[;&|`$]/g, '');
+
+  // If it's just the command name without path, allow it
+  if (sanitized === 'imgbytesizer') {
+    return sanitized;
+  }
+
+  // For actual paths, ensure they are absolute or relative to current directory
+  if (!sanitized.startsWith('/') && !sanitized.startsWith('./')) {
+    throw new Error('Invalid imgbytesizer path: must be absolute or relative to current directory');
+  }
+
+  return sanitized;
 }

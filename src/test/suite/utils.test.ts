@@ -64,26 +64,29 @@ suite('Utils Test Suite', () => {
   });
 
   suite('checkImgbytesizerInstalled()', () => {
-    let execSyncStub: sinon.SinonStub;
+    let spawnSyncStub: sinon.SinonStub;
 
     setup(() => {
-      // Stub execSync from the 'child_process' module
-      // This requires that 'child_process' is require-able in the test env.
-      execSyncStub = sandbox.stub(require('child_process'), 'execSync');
+      // Stub spawnSync from the 'child_process' module
+      spawnSyncStub = sandbox.stub(require('child_process'), 'spawnSync');
     });
 
     test('Should return true if imgbytesizer check command succeeds', async () => {
-      execSyncStub.returns('imgbytesizer version 1.0.0'); // Simulate successful execution
+      spawnSyncStub.returns({ status: 0 }); // Simulate successful execution
       const isInstalled = await utils.checkImgbytesizerInstalled();
       assert.strictEqual(isInstalled, true);
-      assert.ok(execSyncStub.calledOnceWith('imgbytesizer -v', { stdio: 'ignore' }));
+      assert.ok(
+        spawnSyncStub.calledOnceWith('imgbytesizer', ['-v'], { shell: false, stdio: 'ignore' })
+      );
     });
 
     test('Should return false if imgbytesizer check command fails', async () => {
-      execSyncStub.throws(new Error('Command failed')); // Simulate failed execution
+      spawnSyncStub.returns({ status: 1 }); // Simulate failed execution
       const isInstalled = await utils.checkImgbytesizerInstalled();
       assert.strictEqual(isInstalled, false);
-      assert.ok(execSyncStub.calledOnceWith('imgbytesizer -v', { stdio: 'ignore' }));
+      assert.ok(
+        spawnSyncStub.calledOnceWith('imgbytesizer', ['-v'], { shell: false, stdio: 'ignore' })
+      );
     });
   });
 
@@ -283,7 +286,7 @@ suite('Utils Test Suite', () => {
   suite('runImgbytesizer()', () => {
     let existsSyncStub: sinon.SinonStub;
     let mkdirSyncStub: sinon.SinonStub;
-    let execSyncStub: sinon.SinonStub; // Stub for child_process.execSync
+    let spawnSyncStub: sinon.SinonStub;
     let getDefaultOutputPathStub: sinon.SinonStub;
 
     const testImagePath = '/test/input image.jpg';
@@ -293,8 +296,7 @@ suite('Utils Test Suite', () => {
     setup(() => {
       existsSyncStub = sandbox.stub(fs, 'existsSync');
       mkdirSyncStub = sandbox.stub(fs, 'mkdirSync');
-      execSyncStub = sandbox.stub(require('child_process'), 'execSync');
-      // getDefaultOutputPath is stubbed to control its output during these tests
+      spawnSyncStub = sandbox.stub(require('child_process'), 'spawnSync');
       getDefaultOutputPathStub = sandbox
         .stub(utils, 'getDefaultOutputPath')
         .returns(defaultMockedOutputPath);
@@ -313,7 +315,7 @@ suite('Utils Test Suite', () => {
       existsSyncStub.withArgs(testImagePath).returns(true); // Input image exists
       existsSyncStub.withArgs(path.dirname(defaultMockedOutputPath)).returns(false); // Output dir doesn't exist
       existsSyncStub.withArgs(defaultMockedOutputPath).returns(true); // Simulate output file created
-      execSyncStub.returns('Success output from command');
+      spawnSyncStub.returns({ status: 0, stdout: 'Success output from command' });
 
       await utils.runImgbytesizer(testImagePath, defaultOptions);
       assert.ok(
@@ -325,7 +327,7 @@ suite('Utils Test Suite', () => {
 
     test('Should run command and return success if output file is created', async () => {
       existsSyncStub.returns(true); // All paths exist or are created
-      execSyncStub.returns('Process successful!');
+      spawnSyncStub.returns({ status: 0, stdout: 'Process successful!' });
 
       const result = await utils.runImgbytesizer(testImagePath, defaultOptions);
 
@@ -339,8 +341,7 @@ suite('Utils Test Suite', () => {
     test('Should return error if execSync throws', async () => {
       existsSyncStub.returns(true); // Assume input file and output dir exist
       const errorMessage = 'Command execution failed badly';
-      const execError = new Error(errorMessage);
-      execSyncStub.throws(execError);
+      spawnSyncStub.throws(new Error(errorMessage));
 
       const result = await utils.runImgbytesizer(testImagePath, defaultOptions);
       assert.deepStrictEqual(result, {
@@ -357,7 +358,7 @@ suite('Utils Test Suite', () => {
       };
 
       existsSyncStub.returns(true);
-      execSyncStub.returns('Success');
+      spawnSyncStub.returns({ status: 0, stdout: 'Success' });
 
       const result = await utils.runImgbytesizer(testImagePath, optionsWithOutput);
 
