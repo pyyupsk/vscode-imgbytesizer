@@ -3,7 +3,6 @@
   "version": "0.2.0",
   "displayName": "ImaByteSizer",
   "description": "Resize and optimize images to match specific file sizes while maintaining quality",
-  "icon": "images/icon.webp",
   "categories": [
     "Other"
   ],
@@ -50,6 +49,7 @@
     "sinon": "^20.0.0",
     "typescript": "^5.8.3"
   },
+  "icon": "images/icon.webp",
   "contributes": {
     "commands": [
       {

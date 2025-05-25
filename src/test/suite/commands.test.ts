@@ -223,12 +223,12 @@ suite('Commands Test Suite', () => {
   suite('resizeImageWithOptions Command', () => {
     // Helper to simulate a sequence of user inputs
     const simulateUserInputs = (inputs: {
-      customTargetSize?: string | undefined;
-      exactSize?: string | undefined; // "Yes" or "No"
-      format?: string | undefined | { label: string; value: string }; // showQuickPick returns object for format
-      minDimension?: string | undefined;
-      outputPath?: string | undefined;
-      targetSize?: string | undefined;
+      customTargetSize?: string;
+      exactSize?: string; // "Yes" or "No"
+      format?: string | { label: string; value: string }; // showQuickPick returns object for format
+      minDimension?: string;
+      outputPath?: string;
+      targetSize?: string;
     }) => {
       let qpCall = 0;
       let ibCall = 0;
