@@ -1,6 +1,6 @@
 {
   "name": "imgbytesizer",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "displayName": "ImaByteSizer",
   "description": "Resize and optimize images to match specific file sizes while maintaining quality",
   "categories": [

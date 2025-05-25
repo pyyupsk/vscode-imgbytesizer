@@ -3,6 +3,12 @@
 All notable changes to the "vscode-imgbytesizer" extension will be documented in this file.
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.3.1] - 2025-05-25
+
+- Downgrade @types/vscode to ^1.96.0 for better compatibility
+- Replace execSync with spawnSync for improved security
+- Add path validation for imgbytesizer executable
+
 ## [0.3.0] - 2025-05-25
 
 - Add SonarCloud integration
