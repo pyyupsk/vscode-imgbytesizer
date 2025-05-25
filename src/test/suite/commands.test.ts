@@ -107,7 +107,7 @@ suite('Commands Test Suite', () => {
     test('Should show error if no image URI and no active editor with file', async () => {
       checkImgbytesizerInstalledStub.resolves(true);
       // activeTextEditorStub is already undefined by default in setup
-      await commands.resizeImage(undefined);
+      await commands.resizeImage();
       assert.ok(
         showErrorMessageStub.calledOnceWith(
           'Please select an image file in the explorer or editor.'
@@ -132,7 +132,7 @@ suite('Commands Test Suite', () => {
         success: true,
       });
 
-      await commands.resizeImage(undefined);
+      await commands.resizeImage();
 
       assert.ok(runImgbytesizerStub.calledOnce);
       assert.strictEqual(runImgbytesizerStub.firstCall.args[0], editorUri.fsPath);

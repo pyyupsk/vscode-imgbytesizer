@@ -135,7 +135,7 @@ suite('Utils Test Suite', () => {
 
     test('Should generate default output path with original extension if format is undefined', () => {
       assert.strictEqual(
-        utils.getDefaultOutputPath('/path/to/image.png', undefined),
+        utils.getDefaultOutputPath('/path/to/image.png'),
         '/path/to/image_resized.png'
       );
     });
