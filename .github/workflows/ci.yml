@@ -28,6 +28,9 @@ jobs:
           bun run typecheck
           bun run lint
 
+      - name: Fallow audit
+        run: bun run fallow audit
+
       - name: Find VS Code stable release version
         id: code-stable
         run: |

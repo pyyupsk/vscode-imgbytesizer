@@ -60,7 +60,7 @@ export async function resizeImageWithOptions(uri?: vscode.Uri): Promise<void> {
 /**
  * Validates the image file and returns its path
  */
-export async function validateImageAndGetPath(uri?: vscode.Uri): Promise<string | undefined> {
+async function validateImageAndGetPath(uri?: vscode.Uri): Promise<string | undefined> {
   const isInstalled = await utils.checkImgbytesizerInstalled();
   if (!isInstalled) {
     vscode.window.showErrorMessage(
