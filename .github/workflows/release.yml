@@ -21,38 +21,23 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
-    outputs:
-      cache-hit: ${{ steps.cache-pnpm.outputs.cache-hit }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-        name: Setup pnpm
-
-      - uses: actions/setup-node@v4
-        name: Setup Node.js
+      - uses: oven-sh/setup-bun@v2
+        name: Setup Bun
         with:
-          node-version: 22
-          cache: pnpm
-
-      - name: Cache pnpm store
-        id: cache-pnpm
-        uses: actions/cache@v4
-        with:
-          path: ~/.pnpm-store
-          key: pnpm-store-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            pnpm-store-${{ runner.os }}-
+          bun-version: 1.3.12
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: bun install --frozen-lockfile
 
       - name: Package Extension
-        run: pnpm --dlx vsce package
+        run: bunx vsce package
 
       - name: Publish to VSCode Marketplace
-        run: pnpm --dlx vsce publish -p ${{ secrets.VSCE_PAT }}
+        run: bunx vsce publish -p ${{ secrets.VSCE_PAT }}
 
       - name: Upload VSIX to GitHub Releases
         uses: softprops/action-gh-release@v2
