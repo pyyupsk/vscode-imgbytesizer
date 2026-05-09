@@ -13,6 +13,8 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         name: Checkout repository
+        with:
+          fetch-depth: 0
 
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         name: Setup Bun
@@ -29,7 +31,7 @@ jobs:
           bun run lint
 
       - name: Fallow audit
-        run: bun run fallow audit
+        run: bun run fallow audit --base origin/main
 
       - name: Find VS Code stable release version
         id: code-stable
