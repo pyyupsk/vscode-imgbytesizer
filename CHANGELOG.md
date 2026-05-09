@@ -5,8 +5,15 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+### Added
+
+- Fallow codebase intelligence: `.fallowrc.json`, baseline file, and `audit:code` script; CI runs `fallow-rs/fallow@v2` on every push with severity-aware `new-only` gating
+
 ### Changed
 
+- Refactor `commands.ts`: extract `src/constants.ts` for image extensions / format options / target-size presets; route both commands through a shared `validateImageAndGetPath` + `processImageResize` flow (~110 lines deleted)
+- Refactor `utils.ts`: extract `buildArgs` as the single source of truth for the imgbytesizer arg list; split `runImgbytesizer` into `ensureOutputDir` + `interpretResult` helpers (69 LOC / 15 cyclomatic → 24 / 6)
+- Refactor `commands.ts`: extract `promptOutputPath`, `promptMinDimension`, `promptExactSize` helpers from `getUserOptions` (49 LOC / 11 cyclomatic → 27 / 8)
 - Migrate linter and formatter from ESLint + Prettier to oxc (oxlint + oxfmt)
 - Migrate package manager from pnpm to Bun
 - Bump devDependencies to latest (TypeScript 6, sinon 22, @vscode/vsce 3.9, etc.)
@@ -14,6 +21,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### Fixed
 
+- Use `Number.parseInt` and `Number.isNaN` over the global forms in `promptMinDimension`
+- Drop the redundant duplicate success notification in `processImageResize`
 - Rename shadowed `path` identifiers in `getImgbytesizerPath` and `validateImgbytesizerPath` to silence `no-shadow`
 
 ### Security
