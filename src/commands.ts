@@ -108,18 +108,38 @@ async function getUserOptions(
   const format = await showFormatQuickPick(originalExt);
   if (format === undefined) return undefined;
 
+  const outputPath = await promptOutputPath(imagePath, format);
+  if (outputPath === undefined) return undefined;
+
+  const minDimension = await promptMinDimension();
+  if (minDimension === undefined) return undefined;
+
+  const exactSize = await promptExactSize();
+  if (exactSize === undefined) return undefined;
+
+  return {
+    exactSize,
+    format: format === 'same' ? undefined : format,
+    minDimension: minDimension === 0 ? undefined : minDimension,
+    outputPath,
+    targetSize,
+  };
+}
+
+async function promptOutputPath(imagePath: string, format: string): Promise<string | undefined> {
   const defaultOutputPath = utils.getDefaultOutputPath(
     imagePath,
     format === 'same' ? undefined : format
   );
-  const outputPath = await vscode.window.showInputBox({
+  return vscode.window.showInputBox({
     prompt: 'Enter output path (leave empty for default)',
     value: defaultOutputPath,
   });
-  if (outputPath === undefined) return undefined;
+}
 
+async function promptMinDimension(): Promise<number | undefined> {
   const defaultMinDimension = utils.getDefaultOptions().minDimension ?? 0;
-  const minDimensionInput = await vscode.window.showInputBox({
+  const input = await vscode.window.showInputBox({
     prompt: 'Enter minimum dimension in pixels (0 to disable)',
     validateInput: (value) => {
       const num = parseInt(value, 10);
@@ -130,22 +150,17 @@ async function getUserOptions(
     },
     value: defaultMinDimension.toString(),
   });
-  if (minDimensionInput === undefined) return undefined;
-  const minDimension = parseInt(minDimensionInput, 10);
+  if (input === undefined) return undefined;
+  return parseInt(input, 10);
+}
 
-  const exactSizeResult = await vscode.window.showQuickPick(['Yes', 'No'], {
+async function promptExactSize(): Promise<boolean | undefined> {
+  const result = await vscode.window.showQuickPick(['Yes', 'No'], {
     canPickMany: false,
     placeHolder: 'Pad file to exact size?',
   });
-  if (exactSizeResult === undefined) return undefined;
-
-  return {
-    exactSize: exactSizeResult === 'Yes',
-    format: format === 'same' ? undefined : format,
-    minDimension: minDimension === 0 ? undefined : minDimension,
-    outputPath: outputPath ?? defaultOutputPath,
-    targetSize,
-  };
+  if (result === undefined) return undefined;
+  return result === 'Yes';
 }
 
 /**
