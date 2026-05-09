@@ -142,8 +142,8 @@ async function promptMinDimension(): Promise<number | undefined> {
   const input = await vscode.window.showInputBox({
     prompt: 'Enter minimum dimension in pixels (0 to disable)',
     validateInput: (value) => {
-      const num = parseInt(value, 10);
-      if (isNaN(num) || num < 0) {
+      const num = Number.parseInt(value, 10);
+      if (Number.isNaN(num) || num < 0) {
         return 'Please enter a valid number (0 or positive integer).';
       }
       return null;
@@ -151,7 +151,7 @@ async function promptMinDimension(): Promise<number | undefined> {
     value: defaultMinDimension.toString(),
   });
   if (input === undefined) return undefined;
-  return parseInt(input, 10);
+  return Number.parseInt(input, 10);
 }
 
 async function promptExactSize(): Promise<boolean | undefined> {
