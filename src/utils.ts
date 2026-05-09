@@ -83,10 +83,10 @@ export function getDefaultOutputPath(imagePath: string, format?: string): string
 export function getImgbytesizerPath(): string {
   const config = vscode.workspace.getConfiguration('imgbytesizer');
   const imgbytesizerPath = config.get<string>('imgbytesizerPath');
-  const path = imgbytesizerPath ? imgbytesizerPath.trim() : 'imgbytesizer';
+  const resolvedPath = imgbytesizerPath ? imgbytesizerPath.trim() : 'imgbytesizer';
 
   try {
-    return validateImgbytesizerPath(path);
+    return validateImgbytesizerPath(resolvedPath);
   } catch (error) {
     console.error('Invalid imgbytesizer path:', error);
     return 'imgbytesizer'; // Fallback to default
@@ -176,9 +176,9 @@ export async function runImgbytesizer(
 /**
  * Validates and sanitizes the imgbytesizer path
  */
-function validateImgbytesizerPath(path: string): string {
+function validateImgbytesizerPath(inputPath: string): string {
   // Remove any shell metacharacters
-  const sanitized = path.replace(/[;&|`$]/g, '');
+  const sanitized = inputPath.replace(/[;&|`$]/g, '');
 
   // If it's just the command name without path, allow it
   if (sanitized === 'imgbytesizer') {
