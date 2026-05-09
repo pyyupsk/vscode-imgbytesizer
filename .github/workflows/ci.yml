@@ -31,7 +31,11 @@ jobs:
           bun run lint
 
       - name: Fallow audit
-        run: bun run fallow audit --base origin/main
+        uses: fallow-rs/fallow@36a5ab1e4475a92727d21568419cb9e89c2f3484 # v2.67.0
+        with:
+          command: audit
+          gate: new-only
+          health-baseline: .fallow-baselines/health.json
 
       - name: Find VS Code stable release version
         id: code-stable
