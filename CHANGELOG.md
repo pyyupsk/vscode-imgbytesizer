@@ -7,9 +7,14 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### Changed
 
+- Migrate linter and formatter from ESLint + Prettier to oxc (oxlint + oxfmt)
 - Migrate package manager from pnpm to Bun
-- Bump devDependencies to latest (TypeScript 6, ESLint 10, sinon 22, @vscode/vsce 3.9, etc.)
+- Bump devDependencies to latest (TypeScript 6, sinon 22, @vscode/vsce 3.9, etc.)
 - Pin all GitHub Actions to commit SHAs
+
+### Fixed
+
+- Rename shadowed `path` identifiers in `getImgbytesizerPath` and `validateImgbytesizerPath` to silence `no-shadow`
 
 ### Security
 
