@@ -5,6 +5,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-05-09
+
 ### Added
 
 - Fallow codebase intelligence: `.fallowrc.json`, baseline file, and `audit:code` script; CI runs `fallow-rs/fallow@v2` on every push with severity-aware `new-only` gating
