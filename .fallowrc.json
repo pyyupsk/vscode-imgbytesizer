@@ -1,0 +1,20 @@
+{
+  "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
+  "entry": [
+    "src/extension.ts",
+    "src/test/**/*.test.ts",
+    ".vscode-test.mjs"
+  ],
+  "ignoreDependencies": [
+    "@vscode/test-electron",
+    "@vscode/vsce"
+  ],
+  "health": {
+    "ignore": ["src/test/**"]
+  },
+  "duplicates": {},
+  "rules": {},
+  "audit": {
+    "healthBaseline": ".fallow-baselines/health.json"
+  }
+}

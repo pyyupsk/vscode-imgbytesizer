@@ -7,6 +7,8 @@ vsc-extension-quickstart.md
 **/tsconfig.json
 **/.oxlintrc.json
 **/.oxfmtrc.json
+**/.fallowrc.json
+.fallow-baselines/**
 **/*.map
 **/*.ts
 **/.vscode-test.*

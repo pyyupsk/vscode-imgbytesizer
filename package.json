@@ -18,6 +18,7 @@
   },
   "main": "./out/extension.js",
   "scripts": {
+    "audit:code": "fallow audit",
     "compile": "tsc -p ./",
     "format": "oxfmt",
     "format:check": "oxfmt --check",
@@ -38,6 +39,7 @@
     "@vscode/test-cli": "^0.0.12",
     "@vscode/test-electron": "^2.5.2",
     "@vscode/vsce": "^3.9.1",
+    "fallow": "^2.67.0",
     "oxfmt": "^0.48.0",
     "oxlint": "^1.63.0",
     "rimraf": "^6.1.3",
@@ -125,5 +127,8 @@
         }
       }
     }
-  }
+  },
+  "trustedDependencies": [
+    "fallow"
+  ]
 }
