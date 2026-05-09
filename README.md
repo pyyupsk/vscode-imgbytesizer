@@ -40,7 +40,7 @@ A VSCode extension that integrates the `imgbytesizer` command-line to resize and
 This extension contributes the following settings:
 
 - `imgbytesizer.defaultTargetSize`: Default target file size (e.g., '1MB', '500KB')
-- `imgbytesizer.defaultFormat`: Default output format (same, jpg, png, webp)
+- `imgbytesizer.defaultFormat`: Default output format (same, jpg, jpeg, png, webp)
 - `imgbytesizer.defaultMinDimension`: Default minimum width/height in pixels (0 to disable)
 - `imgbytesizer.defaultExact`: Whether to pad file to get exact target size by default
 - `imgbytesizer.imgbytesizerPath`: Path to the imgbytesizer executable (Leave empty to use 'imgbytesizer' as default)

@@ -3,31 +3,68 @@
 All notable changes to the "vscode-imgbytesizer" extension will be documented in this file.
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [Unreleased]
+
+### Changed
+
+- Migrate package manager from pnpm to Bun
+- Bump devDependencies to latest (TypeScript 6, ESLint 10, sinon 22, @vscode/vsce 3.9, etc.)
+- Pin all GitHub Actions to commit SHAs
+
+### Security
+
+- Resolve 30+ Dependabot advisories across `form-data`, `fast-uri`, `lodash`, `undici`, `flatted`, `picomatch`, `minimatch`, `glob`, `tar-fs`, `serialize-javascript`, and `diff` (all dev/build transitive deps)
+- Pass `VSCE_PAT` via env in the publish workflow instead of a CLI flag
+
 ## [0.3.1] - 2025-05-25
 
+### Changed
+
 - Downgrade @types/vscode to ^1.96.0 for better compatibility
+
+### Security
+
 - Replace execSync with spawnSync for improved security
 - Add path validation for imgbytesizer executable
 
 ## [0.3.0] - 2025-05-25
 
-- Add SonarCloud integration
+### Added
+
+- Input validation and user option prompts for advanced resize
+- SonarCloud integration
+- Improved test coverage
+
+### Changed
+
 - Refactor code for better maintainability
 - Update dependencies to latest versions
-- Fix null coalescing operator usage
-- Improve test coverage
+
+### Fixed
+
+- Null coalescing operator usage for `outputPath` in `getUserOptions`
 
 ## [0.2.0] - 2025-05-13
 
-- Add extension icon to vscode marketplace
+### Added
+
+- Extension icon for the VS Code marketplace
+
+### Changed
+
 - Update publisher name in package.json
-- Fix cache directory name in CI workflow
-- Fix permissions for release workflow
+
+### Fixed
+
+- Cache directory name in CI workflow
+- Permissions for release workflow
 
 ## [0.1.0] - Initial Release
 
+### Added
+
 - Initial release of Image ByteSizer
-- Add basic resize command
-- Add advanced resize with options command
-- Add context menu integration for image files
-- Add extension settings for default options
+- Basic resize command
+- Advanced resize command with options
+- Context menu integration for image files
+- Extension settings for default options
