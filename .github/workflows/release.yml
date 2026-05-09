@@ -34,10 +34,10 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Package Extension
-        run: bunx vsce package
+        run: bun run vsce package
 
       - name: Publish to VSCode Marketplace
-        run: bunx vsce publish -p ${{ secrets.VSCE_PAT }}
+        run: bun run vsce publish -p ${{ secrets.VSCE_PAT }}
 
       - name: Upload VSIX to GitHub Releases
         uses: softprops/action-gh-release@v2
