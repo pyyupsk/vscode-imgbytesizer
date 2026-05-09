@@ -35,6 +35,7 @@ jobs:
         with:
           command: audit
           gate: new-only
+          changed-since: origin/main
           health-baseline: .fallow-baselines/health.json
 
       - name: Find VS Code stable release version
