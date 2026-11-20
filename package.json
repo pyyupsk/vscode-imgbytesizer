@@ -39,7 +39,7 @@
     "@vscode/test-cli": "^0.0.12",
     "@vscode/test-electron": "^2.5.2",
     "@vscode/vsce": "^3.9.1",
-    "fallow": "^2.67.0",
+    "fallow": "^3.45.0",
     "oxfmt": "^0.48.0",
     "oxlint": "^1.63.0",
     "rimraf": "^6.1.3",
