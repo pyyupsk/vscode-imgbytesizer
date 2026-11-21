@@ -11,7 +11,7 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         name: Checkout repository
         with:
           fetch-depth: 0
@@ -22,7 +22,7 @@ jobs:
           bun-version: 1.3.12
 
       - name: Install dependencies
-        run: bun install --frozen-lockfile
+        run: bun install --frozen-lockfile --ignore-scripts
 
       - name: Compile & Typecheck & Lint
         run: |
@@ -31,7 +31,7 @@ jobs:
           bun run lint
 
       - name: Fallow audit
-        uses: fallow-rs/fallow@36a5ab1e4475a92727d21568419cb9e89c2f3484 # v2.67.0
+        uses: fallow-rs/fallow@b802ddc49a09ad9df4e9894cdd465f5b51b1b0c8 # v3.45.0
         with:
           command: audit
           gate: new-only
@@ -41,10 +41,10 @@ jobs:
       - name: Find VS Code stable release version
         id: code-stable
         run: |
-          echo "VSCODE_VERSION=`curl --silent https://update.code.visualstudio.com/api/releases/stable | jq -r '.[0]'`" >> "$GITHUB_OUTPUT"
+          echo "VSCODE_VERSION=$(curl --silent https://update.code.visualstudio.com/api/releases/stable | jq -r '.[0]')" >> "$GITHUB_OUTPUT"
 
       - name: Cache VS Code download
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: |
             .vscode-test
